@@ -1,6 +1,16 @@
 ﻿@page "/"
 
+@inject NavigationManager _navigationManager
+
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        _navigationManager.NavigateTo("/login");
+    }
+}
 

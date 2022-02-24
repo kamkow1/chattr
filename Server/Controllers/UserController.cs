@@ -12,7 +12,7 @@ namespace chattr.Server.Controllers
         public UserController(AppDbContext ctx) => _ctx = ctx;
 
         [HttpPost]
-        [Route("/user/register")]
+        [Route("/api/user/register")]
         public IActionResult Register(string login, string password, string email)
         {
             if (!(_ctx.Users.Where(u => u.Login == login).FirstOrDefault() is null))
