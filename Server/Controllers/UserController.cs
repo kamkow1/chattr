@@ -61,10 +61,12 @@ namespace chattr.Server.Controllers
 
             _logger.LogInformation($"metoda { System.Reflection.MethodBase.GetCurrentMethod().Name}, otrzymane dane: login - {user.Login}, hasło - {user.Password}, email - {user.Email}");
 
+            _logger.LogInformation(_ctx.Users.Where(u => u.Login == user.Login).FirstOrDefault().Login);
+
             if (_ctx.Users.Where(u => u.Login == user.Login).FirstOrDefault() is null)
                 return StatusCode(404);
 
-            User foundUser = _ctx.Users.Where(u => u.Login == user.Password && u.Password == user.Password).FirstOrDefault();
+            User foundUser = _ctx.Users.Where(u => u.Login == user.Login && u.Password == user.Password).FirstOrDefault();
 
             if (foundUser is null)
                 return StatusCode(404);
