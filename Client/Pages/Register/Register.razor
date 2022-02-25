@@ -1,15 +1,71 @@
 ﻿@page "/register"
 @using chattr.Shared.Models
 
+@inject IJSRuntime _jsRuntime
+@inject NavigationManager _navigationManager
+
 <div id="register-form">
-    
+    <EditForm Model="@userModel" OnValidSubmit="@HandleSubmit">
+        <div class="form-group">
+            <label for="login">login</label>
+            <InputText 
+                id="login" 
+                @bind-Value="userModel.Login"
+                class="form-control"
+                placeholder="wpisz login"
+                />
+            <small class="form-text text-muted">login będzie wyświetlany jako nazwa użytkownika</small>
+        </div>
+        <div class="form-gorup">
+            <label for="password">hasło</label>
+            <InputText 
+                id="password"
+                @bind-Value="userModel.Password"
+                class="form-control"
+                placeholder="wpisz hasło"
+                type="password"
+                />
+        </div>
+        <div class="form-group">
+            <label for="email">email</label>
+            <InputText 
+                id="email"
+                @bind-Value="userModel.Email"
+                class="form-control"
+                placeholder="wpisz email"
+                type="email"
+                />
+            <small class="form-text text-muted">twój email posłuży nam do wysyłania powiadomień</small>
+        </div>
+
+        <button class="btn btn-primary">zarejestruj</button>
+    </EditForm>
 </div>
 
 @code {
     private User userModel = new();
 
-    private void HandleSubmit()
+    private async Task HandleSubmit()
     {
-        
+        string url = $"{_navigationManager.BaseUri}api/user/register";
+        await _jsRuntime.InvokeVoidAsync("console.log", url);
+
+        object body = new 
+        {
+            login = userModel.Login,
+            password = userModel.Password,
+            email = userModel.Email
+        };
+
+        //await _jsRuntime.InvokeVoidAsync("console.log", body);
+
+        HttpClient client = new();
+        using var response = await client.PostAsJsonAsync<object>(url, body);
+
+        //await _jsRuntime.InvokeVoidAsync("console.log", response);
+        if (response.IsSuccessStatusCode) 
+        {
+            _navigationManager.NavigateTo("/login");
+        }
     }
 }

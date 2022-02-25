@@ -69,3 +69,15 @@ a, .btn-link {
 a {
     font-size: 0.8em;
 }
+
+#register-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: calc(100vh * 0.2);
+}
+
+#register-form input {
+    display: block;
+    margin-block-end: 1em;
+}
