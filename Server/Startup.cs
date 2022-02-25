@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using chattr.Server.Helpers;
+using Microsoft.AspNetCore.Http;
 
 namespace chattr.Server
 {
@@ -29,8 +30,10 @@ namespace chattr.Server
         {
             services.AddSingleton<JWTHelper>();
 
+            services.AddSession();
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options => 
+            .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new()
                 {
@@ -69,9 +72,24 @@ namespace chattr.Server
 
             app.UseHttpsRedirection();
             app.UseBlazorFrameworkFiles();
+
+            app.UseSession();
+            app.Use(async (context, next) => {
+                var token = context.Session.GetString("TOKEN");
+                if (!string.IsNullOrEmpty(token))
+                {
+                    context.Request.Headers.Add("Authorization", "Bearer " + token);
+                }
+
+                await next();
+            });
+
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

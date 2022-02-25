@@ -2,7 +2,9 @@
 using chattr.Server.Helpers;
 using chattr.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace chattr.Server.Controllers
@@ -13,12 +15,14 @@ namespace chattr.Server.Controllers
         private readonly AppDbContext _ctx;
         private readonly ILogger<UserController> _logger;
         private readonly JWTHelper _jwtHelper;
+        private readonly IConfiguration _config; 
 
-        public UserController(AppDbContext ctx, ILogger<UserController> logger, JWTHelper jwtHelper)
+        public UserController(AppDbContext ctx, ILogger<UserController> logger, JWTHelper jwtHelper, IConfiguration config)
         {
             _ctx = ctx;
             _logger = logger;
             _jwtHelper = jwtHelper;
+            _config = config;
         }
 
         [HttpPost]
@@ -68,9 +72,32 @@ namespace chattr.Server.Controllers
             var authenticatedUser = AuthenticateUser(user, foundUser);
 
             string tokenString = _jwtHelper.GenerateJsonWebToken(user);
+
+            HttpContext.Session.SetString("TOKEN", tokenString);
+
             response = Ok(new { token = tokenString });
 
             return response;
+        }
+
+        [HttpPost]
+        [Route("/api/user/current")]
+        [Authorize]
+        public IActionResult GetCurrentUser([FromBody] User user)
+        {
+            string token = HttpContext.Session.GetString("TOKEN");
+            if (token is null)
+                return StatusCode(500);
+
+            if (!_jwtHelper.IsTokenValid(_config["Jwt:Key"].ToString(), _config["Jwt:Issuer"].ToString(), token))
+                return StatusCode(401);
+
+            User foundUser = _ctx.Users.Where(u => u.Login == user.Password && u.Password == user.Password).FirstOrDefault();
+
+            if (foundUser is null)
+                return StatusCode(404);
+
+            return Ok(foundUser);
         }
 
         private static User AuthenticateUser(User userToAuth, User foundUser)

@@ -1,7 +1,12 @@
 ﻿@page "/login"
+@using Newtonsoft.Json
 @using chattr.Shared.Models
+@using Blazored.SessionStorage
 
 @inject IJSRuntime _jsRuntime
+@inject NavigationManager _navigationManager
+@inject ISessionStorageService sessionStorage
+
 
 <div id="login-form">
     <EditForm Model="@userModel" OnValidSubmit="@HandleSubmit">
@@ -33,9 +38,37 @@
 @code {
     private User userModel = new();
 
-    private void HandleSubmit()
+    private async Task HandleSubmit()
     {
-        _jsRuntime.InvokeVoidAsync("console.log", this.userModel.Login);
+        string url = $"{_navigationManager.BaseUri}api/user/login";
+
+        object body = new 
+        {
+            login = userModel.Login,
+            password = userModel.Password
+        };
+
+        HttpClient client = new();
+        using var response = await client.PostAsJsonAsync<object>(url, body);
+
+        if (response.IsSuccessStatusCode) 
+        {
+            await sessionStorage.SetItemAsStringAsync("API_TOKEN", response.Content.ReadAsStringAsync().Result
+                .Replace('"', ' ')
+                .Replace("token", "")
+                .Replace(":", "")
+                .Replace("{", "")
+                .Replace("}", ""));
+
+            string urlToCurrentUser = $"{_navigationManager.BaseUri}api/user/current";
+
+            using var responseFromGetCurrentUser = await client.PostAsJsonAsync<object>(urlToCurrentUser, body);
+            await _jsRuntime.InvokeVoidAsync("console.log", responseFromGetCurrentUser.Content.ReadAsStringAsync().Result);
+
+            await sessionStorage.SetItemAsync<User>("CURRENT_USER", JsonConvert.DeserializeObject<User>(responseFromGetCurrentUser.Content.ReadAsStringAsync().Result));
+
+            _navigationManager.NavigateTo("/");
+        }
     }
 
 }

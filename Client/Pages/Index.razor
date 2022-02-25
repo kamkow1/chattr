@@ -1,14 +1,21 @@
 ﻿@page "/"
+@using Blazored.SessionStorage
+@using chattr.Shared.Models
 
 @inject NavigationManager _navigationManager
-
+@inject ISessionStorageService sesstionStorage
+@inject IJSRuntime _jsRuntime
 
 
 @code
 {
-    protected override void OnInitialized()
+
+    protected override async Task OnInitializedAsync()
     {
-        _navigationManager.NavigateTo("/login");
+        var user = await sesstionStorage.GetItemAsync<User>("CURRENT_USER");
+
+        if (user.ToString().Trim().Length == 0)
+            _navigationManager.NavigateTo("/login");
     }
 }
 

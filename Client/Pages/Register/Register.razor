@@ -48,7 +48,6 @@
     private async Task HandleSubmit()
     {
         string url = $"{_navigationManager.BaseUri}api/user/register";
-        await _jsRuntime.InvokeVoidAsync("console.log", url);
 
         object body = new 
         {
@@ -57,12 +56,9 @@
             email = userModel.Email
         };
 
-        //await _jsRuntime.InvokeVoidAsync("console.log", body);
-
         HttpClient client = new();
         using var response = await client.PostAsJsonAsync<object>(url, body);
-
-        //await _jsRuntime.InvokeVoidAsync("console.log", response);
+;
         if (response.IsSuccessStatusCode) 
         {
             _navigationManager.NavigateTo("/login");
