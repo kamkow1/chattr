@@ -1,0 +1,41 @@
+﻿@page "/login"
+@using chattr.Shared.Models
+
+@inject IJSRuntime _jsRuntime
+
+<div id="login-form">
+    <EditForm Model="@userModel" OnValidSubmit="@HandleSubmit">
+        <div class="form-group">
+            <label for="login">login</label>
+            <InputText 
+                id="login" 
+                @bind-Value="userModel.Login" 
+                class="form-control"
+                placeholder="wpisz login"
+                />
+        </div>
+        <div class="form-group">
+            <label for="login">Hasło</label>
+            <InputText 
+                id="login" 
+                @bind-Value="userModel.Password" 
+                class="form-control"
+                placeholder="wpisz hasło"
+                />
+        </div>
+  
+        <button class="btn btn-primary">zaloguj</button>
+
+        <a href="/register" class="custom-link">nie masz konta? zarejestruj się!</a>
+    </EditForm>
+</div>
+
+@code {
+    private User userModel = new();
+
+    private void HandleSubmit()
+    {
+        _jsRuntime.InvokeVoidAsync("console.log", this.userModel.Login);
+    }
+
+}

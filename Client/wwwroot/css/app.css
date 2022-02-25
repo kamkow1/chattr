@@ -42,9 +42,30 @@ a, .btn-link {
     z-index: 1000;
 }
 
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
-    }
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+#login-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: calc(100vh * 0.2);
+}
+
+#login-form input {
+    display: block; 
+    margin-block-end: 1em;
+}
+
+.custom-link {
+    display: block;
+    margin-block: 1em;
+}
+
+a {
+    font-size: 0.8em;
+}
