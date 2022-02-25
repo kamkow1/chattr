@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace chattr.Server
 {
@@ -24,6 +25,10 @@ namespace chattr.Server
         {
 
             services.AddControllersWithViews();
+
+            services.AddDbContextPool<AppDbContext>(options =>
+                options.UseNpgsql(Configuration.GetConnectionString("Default")));
+            
             services.AddRazorPages();
         }
 
