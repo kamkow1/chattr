@@ -14,7 +14,7 @@
     {
         var user = await sesstionStorage.GetItemAsync<User>("CURRENT_USER");
 
-        if (user.ToString().Trim().Length == 0)
+        if (user is null)
             _navigationManager.NavigateTo("/login");
     }
 }

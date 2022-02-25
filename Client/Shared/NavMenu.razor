@@ -1,5 +1,13 @@
-﻿<div class="top-row pl-4 navbar navbar-dark">
+﻿@using Blazored.SessionStorage
+
+@inject NavigationManager _navigationManager
+@inject ISessionStorageService sessionStorage
+
+<div class="top-row pl-4 navbar navbar-dark">
     <a class="navbar-brand" href="">chattr</a>
+
+    <button class="btn btn-secondary" @onclick="Logout">wyloguj</button>
+
     <button class="navbar-toggler" @onclick="ToggleNavMenu">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -33,5 +41,20 @@
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    private async Task Logout()
+    {
+        string url = $"{_navigationManager.BaseUri}api/user/logout";
+
+        HttpClient client = new();
+        using var response = await client.PostAsJsonAsync<object>(url, null);
+;
+        if (response.IsSuccessStatusCode) 
+        {
+            await sessionStorage.RemoveItemAsync("API_TOKEN");
+            await sessionStorage.RemoveItemAsync("CURRENT_USER");
+            _navigationManager.NavigateTo("/login");
+        }
     }
 }

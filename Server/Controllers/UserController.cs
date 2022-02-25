@@ -81,6 +81,23 @@ namespace chattr.Server.Controllers
         }
 
         [HttpPost]
+        [Route("/api/user/logout")]
+        [Authorize]
+        public IActionResult Logout()
+        {
+            string token = HttpContext.Session.GetString("TOKEN");
+            if (token is null)
+                return StatusCode(500);
+
+            if (!_jwtHelper.IsTokenValid(_config["Jwt:Key"].ToString(), _config["Jwt:Issuer"].ToString(), token))
+                return StatusCode(401);
+
+            HttpContext.Session.Remove("TOKEN");
+
+            return StatusCode(200);
+        }
+
+        [HttpPost]
         [Route("/api/user/current")]
         [Authorize]
         public IActionResult GetCurrentUser([FromBody] User user)
