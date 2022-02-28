@@ -19,37 +19,26 @@ namespace chattr.Server.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.0");
 
-            modelBuilder.Entity("GroupChatUser", b =>
-                {
-                    b.Property<int>("GroupChatsId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UsersId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("GroupChatsId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("GroupChatUser");
-                });
-
-            modelBuilder.Entity("chattr.Shared.Models.GroupChat", b =>
+            modelBuilder.Entity("chattr.Shared.Models.Chat", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .UseSerialColumn();
 
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Topic")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.ToTable("GroupChats");
+                    b.ToTable("Chats");
                 });
 
             modelBuilder.Entity("chattr.Shared.Models.Message", b =>
@@ -59,16 +48,16 @@ namespace chattr.Server.Migrations
                         .HasColumnType("integer")
                         .UseSerialColumn();
 
+                    b.Property<int>("ChatId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Content")
                         .HasColumnType("text");
 
-                    b.Property<int>("GroupChatId")
+                    b.Property<int>("ParentId")
                         .HasColumnType("integer");
 
-                    b.Property<bool>("MarkedAsRead")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime>("SentDate")
+                    b.Property<DateTime>("SendDate")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<int>("UserId")
@@ -76,60 +65,13 @@ namespace chattr.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GroupChatId");
+                    b.HasIndex("ChatId");
+
+                    b.HasIndex("ParentId");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Messages");
-                });
-
-            modelBuilder.Entity("chattr.Shared.Models.Notification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .UseSerialColumn();
-
-                    b.Property<string>("Content")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Header")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("MarkedAsRecived")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("NotificationTypeId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("PushedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NotificationTypeId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Notifications");
-                });
-
-            modelBuilder.Entity("chattr.Shared.Models.NotificationType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .UseSerialColumn();
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NotificationTypes");
                 });
 
             modelBuilder.Entity("chattr.Shared.Models.User", b =>
@@ -138,6 +80,9 @@ namespace chattr.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .UseSerialColumn();
+
+                    b.Property<int?>("ChatId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Email")
                         .HasColumnType("text");
@@ -150,36 +95,24 @@ namespace chattr.Server.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int?>("SelfId")
-                        .HasColumnType("integer");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("SelfId");
+                    b.HasIndex("ChatId");
 
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("GroupChatUser", b =>
-                {
-                    b.HasOne("chattr.Shared.Models.GroupChat", null)
-                        .WithMany()
-                        .HasForeignKey("GroupChatsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("chattr.Shared.Models.User", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("chattr.Shared.Models.Message", b =>
                 {
-                    b.HasOne("chattr.Shared.Models.GroupChat", "GroupChat")
-                        .WithMany("Messages")
-                        .HasForeignKey("GroupChatId")
+                    b.HasOne("chattr.Shared.Models.Chat", "Chat")
+                        .WithMany()
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("chattr.Shared.Models.Message", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -189,56 +122,28 @@ namespace chattr.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("GroupChat");
+                    b.Navigation("Chat");
 
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("chattr.Shared.Models.Notification", b =>
-                {
-                    b.HasOne("chattr.Shared.Models.NotificationType", "NotificationType")
-                        .WithMany("Notifications")
-                        .HasForeignKey("NotificationTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("chattr.Shared.Models.User", "User")
-                        .WithMany("Notifications")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("NotificationType");
+                    b.Navigation("Parent");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("chattr.Shared.Models.User", b =>
                 {
-                    b.HasOne("chattr.Shared.Models.User", "Self")
-                        .WithMany("Friends")
-                        .HasForeignKey("SelfId");
-
-                    b.Navigation("Self");
+                    b.HasOne("chattr.Shared.Models.Chat", null)
+                        .WithMany("Members")
+                        .HasForeignKey("ChatId");
                 });
 
-            modelBuilder.Entity("chattr.Shared.Models.GroupChat", b =>
+            modelBuilder.Entity("chattr.Shared.Models.Chat", b =>
                 {
-                    b.Navigation("Messages");
-                });
-
-            modelBuilder.Entity("chattr.Shared.Models.NotificationType", b =>
-                {
-                    b.Navigation("Notifications");
+                    b.Navigation("Members");
                 });
 
             modelBuilder.Entity("chattr.Shared.Models.User", b =>
                 {
-                    b.Navigation("Friends");
-
                     b.Navigation("Messages");
-
-                    b.Navigation("Notifications");
                 });
 #pragma warning restore 612, 618
         }

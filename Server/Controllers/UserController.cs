@@ -111,7 +111,7 @@ namespace chattr.Server.Controllers
             if (!_jwtHelper.IsTokenValid(_config["Jwt:Key"].ToString(), _config["Jwt:Issuer"].ToString(), token))
                 return StatusCode(401);
 
-            User foundUser = _ctx.Users.Where(u => u.Login == user.Password && u.Password == user.Password).FirstOrDefault();
+            User foundUser = _ctx.Users.Where(u => u.Login == user.Login && u.Password == user.Password).FirstOrDefault();
 
             if (foundUser is null)
                 return StatusCode(404);

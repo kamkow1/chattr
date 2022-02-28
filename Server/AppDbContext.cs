@@ -15,11 +15,7 @@ namespace chattr.Server
 
         public DbSet<Message> Messages { get; set; } 
 
-        public DbSet<GroupChat> GroupChats { get; set; }
-
-        public DbSet<Notification> Notifications { get; set; }
-
-        public DbSet<NotificationType> NotificationTypes { get; set; }
+        public DbSet<Chat> Chats { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
