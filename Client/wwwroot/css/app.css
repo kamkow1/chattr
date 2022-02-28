@@ -78,3 +78,16 @@ a {
 
 .nav-icon {
   margin-right: 10%; }
+
+.show-add-chat-menu-btn {
+  display: flex;
+  margin-bottom: calc(100vh * 0.05); }
+
+#add-chat-form {
+  display: flex;
+  justify-content: left;
+  align-items: flex-start; }
+
+#add-chat-form input {
+  display: block;
+  margin-block-end: 1em; }
