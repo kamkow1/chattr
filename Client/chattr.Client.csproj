@@ -33,4 +33,9 @@
     <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="npm\package-lock.json" />
+    <_ContentIncludedByDefault Remove="npm\package.json" />
+  </ItemGroup>
+
 </Project>

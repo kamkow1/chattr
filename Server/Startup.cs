@@ -72,6 +72,12 @@ namespace chattr.Server
 
             app.UseHttpsRedirection();
             app.UseBlazorFrameworkFiles();
+            
+            app.UseStaticFiles();
+
+            app.UseRouting();
+
+            app.UseAuthorization();
 
             app.UseSession();
             app.Use(async (context, next) => {
@@ -83,14 +89,7 @@ namespace chattr.Server
 
                 await next();
             });
-
-            app.UseStaticFiles();
-
-            app.UseRouting();
-
-            app.UseAuthentication();
-            app.UseAuthorization();
-
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();

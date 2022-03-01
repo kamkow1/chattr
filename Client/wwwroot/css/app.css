@@ -84,10 +84,59 @@ a {
   margin-bottom: calc(100vh * 0.05); }
 
 #add-chat-form {
-  display: flex;
+  display: inline-flex;
   justify-content: left;
-  align-items: flex-start; }
+  align-items: flex-start;
+  float: right;
+
+}
 
 #add-chat-form input {
   display: block;
   margin-block-end: 1em; }
+
+.chat-box {
+  display: block;
+  /*display: block;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: calc(100vh * 0.05);
+  width: 20%;*/
+}
+
+#chats {
+  margin-top: calc(100vh * 0.05);
+}
+
+#chats-container {
+  display: block;
+  float: right;
+}
+
+.chat-list {
+  margin: 0;
+}
+
+.chat-topic {
+  
+}
+
+.chat-date {
+}
+
+.more-opts-btn {
+  display: flex;
+  margin-left: auto;
+}
+
+.more-opts-btn svg {
+  padding: 0;
+  border: none;
+  background: none;
+}
+
+.toggle-chat-info-btn {
+  float: right;
+  font-size: 0.7em;
+  margin-left: 0.7em;
+}

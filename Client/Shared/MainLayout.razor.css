@@ -9,7 +9,8 @@
 }
 
 .sidebar {
-    background-color: #6ea8fe;
+    background-color: rgb(52, 58, 64);
+    z-index: 999;
 }
 
 .top-row {

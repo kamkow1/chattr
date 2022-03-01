@@ -1,0 +1,38 @@
+﻿@using chattr.Shared.Models
+
+<div>
+    <BlazorAnimate.Animate Animation="BlazorAnimate.Animations.FadeRight" Duration="TimeSpan.FromMilliseconds(200)">
+        <EditForm Model="@chatModel" OnValidSubmit="@HandleSubmit">
+            <div class="form-group">
+                <label for="topic" class="text-light">temat czatu</label>
+                <InputText 
+                    id="topic"
+                    @bind-Value="chatModel.Topic"
+                    class="form-control"
+                    placeholder="wpisz temat czatu"
+                />
+            </div>
+            <div class="form-group">
+                <label for="desc" class="text-light">opis</label>
+                <InputText 
+                    id="desc"
+                    @bind-Value="chatModel.Description"
+                    class="form-control"
+                    placeholder="wpisz opis czatu"
+                />
+            </div>
+            
+            <button class="btn btn-outline-primary">dodaj</button>
+        </EditForm>
+    </BlazorAnimate.Animate>
+</div>
+
+@code {
+
+    [Parameter]
+    public Chat chatModel { get; set; }
+
+    [Parameter]
+    public Action HandleSubmit { get; set; }
+
+}

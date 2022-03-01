@@ -1,0 +1,41 @@
+﻿@using chattr.Shared.Models
+
+<div class="chat-box">
+    <ul class="list-group">
+        <li class="list-group-item bg-light chat-list">
+            <span class="chat-topic text-dark">
+                nazwa:
+                @chat.Topic
+            </span>
+            <button class="toggle-chat-info-btn btn btn-secondary"
+                    @onclick="() => { this.isInfoOpen = !this.isInfoOpen; }">
+                więcej
+            </button>
+        </li>
+        
+        <div>
+            @if (this.isInfoOpen)
+            {
+                <li class="list-group-item">
+                    opis
+                    <span class="chat-desc">@chat.Description</span>
+                            
+                    <small class="disabled form-text">
+                        <span class="chat-date">
+                            data utworzenia:
+                            @chat.CreationDate
+                        </span>
+                    </small>
+                </li>
+            }
+        </div>
+    </ul>
+</div>
+
+@code {
+
+    [Parameter]
+    public Chat chat { get; set; }
+
+    private bool isInfoOpen = false;
+}
