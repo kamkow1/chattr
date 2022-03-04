@@ -2,6 +2,7 @@
 @using Newtonsoft.Json
 @using chattr.Shared.Models
 @using Blazored.SessionStorage
+@using System.Net.Http.Headers
 
 @inject IJSRuntime _jsRuntime
 @inject NavigationManager _navigationManager
@@ -40,7 +41,7 @@
 
     private async Task HandleSubmit()
     {
-        string url = $"{_navigationManager.BaseUri}api/user/login";
+        string url = $"{_navigationManager.BaseUri}api/users/auth";
 
         object body = new 
         {
@@ -48,7 +49,7 @@
             password = userModel.Password
         };
 
-        HttpClient client = new();
+        using HttpClient client = new();
         using var response = await client.PostAsJsonAsync<object>(url, body);
 
         if (response.IsSuccessStatusCode) 
@@ -60,9 +61,18 @@
                 .Replace("{", "")
                 .Replace("}", ""));
 
-            string urlToCurrentUser = $"{_navigationManager.BaseUri}api/user/current";
+            string urlToCurrentUser = $"{_navigationManager.BaseUri}api/users/login";
 
-            using var responseFromGetCurrentUser = await client.PostAsJsonAsync<object>(urlToCurrentUser, body);
+            using HttpClient httpClient = new();
+            string token = await sessionStorage.GetItemAsync<string>("API_TOKEN");
+
+            await _jsRuntime.InvokeVoidAsync("console.log", token);
+            
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+
+            await _jsRuntime.InvokeVoidAsync("console.log", httpClient);
+            
+            using var responseFromGetCurrentUser = await httpClient.PostAsJsonAsync<object>(urlToCurrentUser, body);
             await _jsRuntime.InvokeVoidAsync("console.log", responseFromGetCurrentUser.Content.ReadAsStringAsync().Result);
 
             await sessionStorage.SetItemAsync<User>("CURRENT_USER", JsonConvert.DeserializeObject<User>(responseFromGetCurrentUser.Content.ReadAsStringAsync().Result));

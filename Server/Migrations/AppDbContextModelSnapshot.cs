@@ -33,7 +33,6 @@ namespace chattr.Server.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Topic")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -54,7 +53,7 @@ namespace chattr.Server.Migrations
                     b.Property<string>("Content")
                         .HasColumnType("text");
 
-                    b.Property<int>("ParentId")
+                    b.Property<int?>("ParentId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("SendDate")
@@ -88,11 +87,9 @@ namespace chattr.Server.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Login")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -112,9 +109,7 @@ namespace chattr.Server.Migrations
 
                     b.HasOne("chattr.Shared.Models.Message", "Parent")
                         .WithMany()
-                        .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ParentId");
 
                     b.HasOne("chattr.Shared.Models.User", "User")
                         .WithMany("Messages")

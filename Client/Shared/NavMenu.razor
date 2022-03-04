@@ -108,9 +108,13 @@
             topic = chatModel.Topic,
             description = chatModel.Description
         };
+        
+        using HttpClient httpClient = new();
+        string token = await sessionStorage.GetItemAsync<string>("API_TOKEN");
+        
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
-        HttpClient client = new();
-        using var response = await client.PostAsJsonAsync<object>(url, body);
+        var response = await httpClient.PostAsJsonAsync(url, body);
     }
 
     private void ToggleNavMenu()

@@ -140,3 +140,11 @@ a {
   font-size: 0.7em;
   margin-left: 0.7em;
 }
+
+.msg {
+  display: flex;
+  flex-wrap: wrap;
+  width: 20%;
+  margin-bottom: 1%;
+  padding: 1%;
+}

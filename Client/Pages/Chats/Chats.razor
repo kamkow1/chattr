@@ -1,0 +1,48 @@
+﻿@page "/chats"
+@using chattr.Shared.Models
+@using Blazored.SessionStorage
+
+@inject IJSRuntime _jsRuntime
+@inject ISessionStorageService sessionStorage
+
+<div class="container-fluid">
+    <ChatsMenu OnMessageLoad="MessagesLoaded" OnMessageUnload="MessagedUnloaded"/>
+    
+    <div>
+        @if (Messages is not null && CurrentUser is not null)
+        {
+            @foreach (var msg in Messages)
+            {
+                <div class="@(CurrentUser.Id == msg.UserId ? "rounded bg-info" : "rounded bg-secondary") 
+                    text-light msg">
+                    @msg.Content
+
+                    <small class="form-text disabled">przesłano: @msg.SendDate</small>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+@code {
+
+    private List<Message> Messages;
+
+    private User CurrentUser;
+
+    private async Task MessagesLoaded(List<Message> messages)
+    {
+        Messages = messages;
+        _jsRuntime.InvokeVoidAsync("console.log", messages);
+
+        CurrentUser = await sessionStorage.GetItemAsync<User>("CURRENT_USER");
+        StateHasChanged();
+    }
+
+    private async Task MessagedUnloaded()
+    {
+        Messages = null;
+        StateHasChanged();
+    }
+
+}

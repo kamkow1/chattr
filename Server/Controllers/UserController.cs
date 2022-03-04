@@ -1,11 +1,15 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
+using System.Security.Claims;
 using chattr.Server.Helpers;
 using chattr.Shared.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace chattr.Server.Controllers
 {
@@ -26,7 +30,7 @@ namespace chattr.Server.Controllers
         }
 
         [HttpPost]
-        [Route("/api/user/register")]
+        [Route("/api/users/register")]
         public IActionResult Register([FromBody] User user)
         {
             _logger.LogInformation($"metoda {System.Reflection.MethodBase.GetCurrentMethod().Name}, otrzymane dane: login - {user.Login}, hasło - {user.Password}, email - {user.Email}");
@@ -52,83 +56,32 @@ namespace chattr.Server.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        [Route("/api/user/login")]
-        public IActionResult Login([FromBody] User user)
+        [Route("/api/users/auth")]
+        public IActionResult Authenticate([FromBody] User user)
         {
-            _logger.LogInformation($"surowy request: {HttpContext.Request.Body.ToString()}");
-
             IActionResult response = Unauthorized();
+            var foundUser = _ctx.Users.FirstOrDefault(u => u.Login == user.Login && u.Password == user.Password);
 
-            _logger.LogInformation($"metoda { System.Reflection.MethodBase.GetCurrentMethod().Name}, otrzymane dane: login - {user.Login}, hasło - {user.Password}, email - {user.Email}");
-
-            _logger.LogInformation(_ctx.Users.Where(u => u.Login == user.Login).FirstOrDefault().Login);
-
-            if (_ctx.Users.Where(u => u.Login == user.Login).FirstOrDefault() is null)
-                return StatusCode(404);
-
-            User foundUser = _ctx.Users.Where(u => u.Login == user.Login && u.Password == user.Password).FirstOrDefault();
-
-            if (foundUser is null)
-                return StatusCode(404);
-
-            var authenticatedUser = AuthenticateUser(user, foundUser);
-
-            string tokenString = _jwtHelper.GenerateJsonWebToken(user);
-
-            HttpContext.Session.SetString("TOKEN", tokenString);
-
-            response = Ok(new { token = tokenString });
+            if (foundUser is not null)
+            {
+                var tokenString = _jwtHelper.GenerateJsonWebToken(foundUser);
+                response = Ok(new { token = tokenString });
+            }
 
             return response;
         }
-
-        [HttpPost]
-        [Route("/api/user/logout")]
+        
         [Authorize]
-        public IActionResult Logout()
-        {
-            string token = HttpContext.Session.GetString("TOKEN");
-            if (token is null)
-                return StatusCode(500);
-
-            if (!_jwtHelper.IsTokenValid(_config["Jwt:Key"].ToString(), _config["Jwt:Issuer"].ToString(), token))
-                return StatusCode(401);
-
-            HttpContext.Session.Remove("TOKEN");
-
-            return StatusCode(200);
-        }
-
         [HttpPost]
-        [Route("/api/user/current")]
-        [Authorize]
-        public IActionResult GetCurrentUser([FromBody] User user)
+        [Route("/api/users/login")]
+        public IActionResult Login([FromBody] User user)
         {
-            string token = HttpContext.Session.GetString("TOKEN");
-            if (token is null)
-                return StatusCode(500);
-
-            if (!_jwtHelper.IsTokenValid(_config["Jwt:Key"].ToString(), _config["Jwt:Issuer"].ToString(), token))
-                return StatusCode(401);
-
-            User foundUser = _ctx.Users.Where(u => u.Login == user.Login && u.Password == user.Password).FirstOrDefault();
+            var foundUser = _ctx.Users.FirstOrDefault(u => u.Login == user.Login && u.Password == user.Password);
 
             if (foundUser is null)
                 return StatusCode(404);
-
+            
             return Ok(foundUser);
-        }
-
-        private static User AuthenticateUser(User userToAuth, User foundUser)
-        {
-            User user = null;
-
-            if (userToAuth.Login == foundUser.Login)
-            {
-                user = foundUser;
-            }
-
-            return user;
         }
     }
 }
