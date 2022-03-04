@@ -3,17 +3,17 @@
 @using Blazored.SessionStorage
 
 @inject IJSRuntime _jsRuntime
-@inject ISessionStorageService sessionStorage
+@inject ISessionStorageService _sessionStorage
 
 <div class="container-fluid">
     <ChatsMenu OnMessageLoad="MessagesLoaded" OnMessageUnload="MessagedUnloaded"/>
     
     <div>
-        @if (Messages is not null && CurrentUser is not null)
+        @if (_messages is not null && _currentUser is not null)
         {
-            @foreach (var msg in Messages)
+            @foreach (var msg in _messages)
             {
-                <div class="@(CurrentUser.Id == msg.UserId ? "rounded bg-info" : "rounded bg-secondary") 
+                <div class="@(_currentUser.Id == msg.UserId ? "rounded bg-info" : "rounded bg-secondary") 
                     text-light msg">
                     @msg.Content
 
@@ -26,22 +26,22 @@
 
 @code {
 
-    private List<Message> Messages;
+    private List<Message> _messages;
 
-    private User CurrentUser;
+    private User _currentUser;
 
     private async Task MessagesLoaded(List<Message> messages)
     {
-        Messages = messages;
-        _jsRuntime.InvokeVoidAsync("console.log", messages);
+        _messages = messages;
+        await _jsRuntime.InvokeVoidAsync("console.log", messages);
 
-        CurrentUser = await sessionStorage.GetItemAsync<User>("CURRENT_USER");
+        _currentUser = await _sessionStorage.GetItemAsync<User>("CURRENT_USER");
         StateHasChanged();
     }
 
     private async Task MessagedUnloaded()
     {
-        Messages = null;
+        _messages = null;
         StateHasChanged();
     }
 

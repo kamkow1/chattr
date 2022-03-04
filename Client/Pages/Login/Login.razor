@@ -6,7 +6,7 @@
 
 @inject IJSRuntime _jsRuntime
 @inject NavigationManager _navigationManager
-@inject ISessionStorageService sessionStorage
+@inject ISessionStorageService _sessionStorage
 
 
 <div id="login-form">
@@ -54,7 +54,7 @@
 
         if (response.IsSuccessStatusCode) 
         {
-            await sessionStorage.SetItemAsStringAsync("API_TOKEN", response.Content.ReadAsStringAsync().Result
+            await _sessionStorage.SetItemAsStringAsync("API_TOKEN", response.Content.ReadAsStringAsync().Result
                 .Replace('"', ' ')
                 .Replace("token", "")
                 .Replace(":", "")
@@ -64,7 +64,7 @@
             string urlToCurrentUser = $"{_navigationManager.BaseUri}api/users/login";
 
             using HttpClient httpClient = new();
-            string token = await sessionStorage.GetItemAsync<string>("API_TOKEN");
+            string token = await _sessionStorage.GetItemAsync<string>("API_TOKEN");
 
             await _jsRuntime.InvokeVoidAsync("console.log", token);
             
@@ -75,7 +75,7 @@
             using var responseFromGetCurrentUser = await httpClient.PostAsJsonAsync<object>(urlToCurrentUser, body);
             await _jsRuntime.InvokeVoidAsync("console.log", responseFromGetCurrentUser.Content.ReadAsStringAsync().Result);
 
-            await sessionStorage.SetItemAsync<User>("CURRENT_USER", JsonConvert.DeserializeObject<User>(responseFromGetCurrentUser.Content.ReadAsStringAsync().Result));
+            await _sessionStorage.SetItemAsync<User>("CURRENT_USER", JsonConvert.DeserializeObject<User>(responseFromGetCurrentUser.Content.ReadAsStringAsync().Result));
 
             _navigationManager.NavigateTo("/");
         }

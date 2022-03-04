@@ -3,7 +3,7 @@
 @using Newtonsoft.Json
 
 @inject NavigationManager _navigationManager
-@inject ISessionStorageService sessionStorage
+@inject ISessionStorageService _sessionStorage
 @inject IJSRuntime _jsRuntime
 
 <div id="chats-container">
@@ -42,7 +42,7 @@
     {
         string url = $"{_navigationManager.BaseUri}api/chats/get";
 
-        User user = await sessionStorage.GetItemAsync<User>("CURRENT_USER");
+        User user = await _sessionStorage.GetItemAsync<User>("CURRENT_USER");
         
         object body = new 
         {
@@ -50,7 +50,7 @@
         };
 
         using HttpClient httpClient = new();
-        string token = await sessionStorage.GetItemAsync<string>("API_TOKEN");
+        string token = await _sessionStorage.GetItemAsync<string>("API_TOKEN");
         
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
@@ -60,7 +60,7 @@
         {
             chats = response.Content.ReadFromJsonAsync<Chat[]>().Result.ToList();
 
-            await sessionStorage.SetItemAsync("CHAT_IDS", chats.Select(c => c.Id));
+            await _sessionStorage.SetItemAsync("CHAT_IDS", chats.Select(c => c.Id));
             
             StateHasChanged();
         }
@@ -68,14 +68,14 @@
 
     private async Task UnloadMessages()
     {
-        OnMessageUnload.InvokeAsync();
+        await OnMessageUnload.InvokeAsync();
     }
 
     private async Task LoadMessages(int chatId)
     {
         string url = $"{_navigationManager.BaseUri}api/msg/get";
 
-        int[] chatIds = await sessionStorage.GetItemAsync<int[]>("CHAT_IDS");
+        int[] chatIds = await _sessionStorage.GetItemAsync<int[]>("CHAT_IDS");
         chatId = chatIds[chatId];
         
         object body = new 
@@ -84,7 +84,7 @@
         };
         
         using HttpClient httpClient = new();
-        string token = await sessionStorage.GetItemAsync<string>("API_TOKEN");
+        string token = await _sessionStorage.GetItemAsync<string>("API_TOKEN");
         
         await _jsRuntime.InvokeVoidAsync("console.log", body);
         

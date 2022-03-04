@@ -3,7 +3,7 @@
 @using chattr.Shared.Models
 
 @inject NavigationManager _navigationManager
-@inject ISessionStorageService sessionStorage
+@inject ISessionStorageService _sessionStorage
 
 <div class="top-row pl-4 navbar navbar-dark" style="background-color: #0a58ca">
     <a class="navbar-brand" href="">chattr</a>
@@ -110,7 +110,7 @@
         };
         
         using HttpClient httpClient = new();
-        string token = await sessionStorage.GetItemAsync<string>("API_TOKEN");
+        string token = await _sessionStorage.GetItemAsync<string>("API_TOKEN");
         
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
@@ -131,8 +131,8 @@
 ;
         if (response.IsSuccessStatusCode) 
         {
-            await sessionStorage.RemoveItemAsync("API_TOKEN");
-            await sessionStorage.RemoveItemAsync("CURRENT_USER");
+            await _sessionStorage.RemoveItemAsync("API_TOKEN");
+            await _sessionStorage.RemoveItemAsync("CURRENT_USER");
             _navigationManager.NavigateTo("/login");
         }
     }

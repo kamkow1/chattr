@@ -3,7 +3,7 @@
 @using chattr.Shared.Models
 
 @inject NavigationManager _navigationManager
-@inject ISessionStorageService sesstionStorage
+@inject ISessionStorageService _sesstionStorage
 @inject IJSRuntime _jsRuntime
 
 
@@ -12,7 +12,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var user = await sesstionStorage.GetItemAsync<User>("CURRENT_USER");
+        var user = await _sesstionStorage.GetItemAsync<User>("CURRENT_USER");
 
         if (user is null)
             _navigationManager.NavigateTo("/login");
