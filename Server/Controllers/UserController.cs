@@ -29,6 +29,7 @@ namespace chattr.Server.Controllers
             _config = config;
         }
 
+        [AllowAnonymous]
         [HttpPost]
         [Route("/api/users/register")]
         public IActionResult Register([FromBody] User user)

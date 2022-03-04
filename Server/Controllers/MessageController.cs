@@ -34,7 +34,7 @@ namespace chattr.Server.Controllers
         public IActionResult GetMessages([FromBody] Chat chat)
         {
             _logger.LogInformation($"dane z requesta: {JsonConvert.SerializeObject(chat)}");
-            var messages = _ctx.Messages.Where(m => m.ChatId == chat.Id + 1).ToList();
+            var messages = _ctx.Messages.Where(m => m.ChatId == chat.Id).ToList();
 
             /*if (!messages.Any())
                 return StatusCode(404);*/

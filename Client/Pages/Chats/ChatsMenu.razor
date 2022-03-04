@@ -14,7 +14,7 @@
             {
                 @foreach (var chat in chats)
                 {
-                    <ChatBox chat="chat" loadMessages="LoadMessages"/>
+                    <ChatBox chat="chat" loadMessages="(args) => LoadMessages(chat.Id)"/>
                 }
             }
         </ul>
@@ -60,27 +60,19 @@
         {
             chats = response.Content.ReadFromJsonAsync<Chat[]>().Result.ToList();
 
-            await _sessionStorage.SetItemAsync("CHAT_IDS", chats.Select(c => c.Id));
-            
             StateHasChanged();
         }
     }
 
-    private async Task UnloadMessages()
-    {
-        await OnMessageUnload.InvokeAsync();
-    }
-
     private async Task LoadMessages(int chatId)
     {
+        await _jsRuntime.InvokeVoidAsync("console.log", $"chat id {chatId}");
+        
         string url = $"{_navigationManager.BaseUri}api/msg/get";
 
-        int[] chatIds = await _sessionStorage.GetItemAsync<int[]>("CHAT_IDS");
-        chatId = chatIds[chatId];
-        
         object body = new 
         {
-            chatid = chatId
+            id = chatId
         };
         
         using HttpClient httpClient = new();
