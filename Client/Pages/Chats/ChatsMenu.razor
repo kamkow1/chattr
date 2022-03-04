@@ -1,0 +1,100 @@
+﻿@using chattr.Shared.Models
+@using Blazored.SessionStorage
+@using Newtonsoft.Json
+
+@inject NavigationManager _navigationManager
+@inject ISessionStorageService sessionStorage
+@inject IJSRuntime _jsRuntime
+
+<div id="chats-container">
+    <div id="chats">
+        <ul class="list-group">
+            <li class="list-group-item active">dostępne czaty</li>
+            @if (!(chats is null))
+            {
+                @foreach (var chat in chats)
+                {
+                    <ChatBox chat="chat" loadMessages="LoadMessages"/>
+                }
+            }
+        </ul>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public EventCallback<List<Message>> OnMessageLoad { get; set; }
+
+    [Parameter] 
+    public EventCallback<List<Message>> OnMessageUnload { get; set; }
+    
+    private Chat chatModel = new();
+
+    private List<Chat> chats = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Load();
+    }
+
+    private async Task Load()
+    {
+        string url = $"{_navigationManager.BaseUri}api/chats/get";
+
+        User user = await sessionStorage.GetItemAsync<User>("CURRENT_USER");
+        
+        object body = new 
+        {
+            id = user.Id
+        };
+
+        using HttpClient httpClient = new();
+        string token = await sessionStorage.GetItemAsync<string>("API_TOKEN");
+        
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+
+        var response = await httpClient.PostAsJsonAsync(url, body);
+
+        if (response.IsSuccessStatusCode)
+        {
+            chats = response.Content.ReadFromJsonAsync<Chat[]>().Result.ToList();
+
+            await sessionStorage.SetItemAsync("CHAT_IDS", chats.Select(c => c.Id));
+            
+            StateHasChanged();
+        }
+    }
+
+    private async Task UnloadMessages()
+    {
+        OnMessageUnload.InvokeAsync();
+    }
+
+    private async Task LoadMessages(int chatId)
+    {
+        string url = $"{_navigationManager.BaseUri}api/msg/get";
+
+        int[] chatIds = await sessionStorage.GetItemAsync<int[]>("CHAT_IDS");
+        chatId = chatIds[chatId];
+        
+        object body = new 
+        {
+            chatid = chatId
+        };
+        
+        using HttpClient httpClient = new();
+        string token = await sessionStorage.GetItemAsync<string>("API_TOKEN");
+        
+        await _jsRuntime.InvokeVoidAsync("console.log", body);
+        
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+
+        var response = await httpClient.PostAsJsonAsync(url, body);
+
+        await _jsRuntime.InvokeVoidAsync("console.log", await response.Content.ReadAsStringAsync());
+
+        await OnMessageLoad.InvokeAsync(await response.Content.ReadFromJsonAsync<List<Message>>());
+    }
+
+}
