@@ -1,7 +1,4 @@
 ﻿@page "/login"
-@using Newtonsoft.Json
-@using chattr.Shared.Models
-@using Blazored.SessionStorage
 
 @inject IJSRuntime _jsRuntime
 @inject NavigationManager _navigationManager
@@ -75,7 +72,7 @@
             await _jsRuntime.InvokeVoidAsync("console.log", responseFromGetCurrentUser.Content.ReadAsStringAsync().Result);
 
             await _sessionStorage.SetItemAsync<User>("CURRENT_USER", JsonConvert.DeserializeObject<User>(responseFromGetCurrentUser.Content.ReadAsStringAsync().Result));
-
+            
             _navigationManager.NavigateTo("/");
         }
     }

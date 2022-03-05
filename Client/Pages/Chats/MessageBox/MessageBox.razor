@@ -1,6 +1,3 @@
-@using chattr.Shared.Models
-@using BlazorAnimate
-
 <Animate Animation="new SlideDownAnimation()" Duration="TimeSpan.FromMilliseconds(800)">
     <div class="@(currentUser.Id == message.UserId ? "rounded bg-secondary" : "rounded bg-light text-dark") text-light msg"
          @onmouseover="() => this.isExtraInfoShown = true" @onmouseout="() => this.isExtraInfoShown = false">
