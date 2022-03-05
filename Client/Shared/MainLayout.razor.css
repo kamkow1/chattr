@@ -11,6 +11,7 @@
 .sidebar {
     background-color: rgb(52, 58, 64);
     z-index: 999;
+    box-shadow: 8px 8px 100px -30px rgb(32 32 32);
 }
 
 .top-row {
