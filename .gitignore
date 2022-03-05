@@ -3,8 +3,8 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-chattr/appsettings.json
-chattr/apsettings.Development.json
+Server/appsettings.json
+Server/apsettings.Development.json
 
 # User-specific files
 *.rsuser
