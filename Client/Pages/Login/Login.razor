@@ -8,7 +8,7 @@
 <div id="login-form">
     <EditForm Model="@userModel" OnValidSubmit="@HandleSubmit">
         <div class="form-group">
-            <label for="login">login</label>
+            <label for="login" class="text-light">login</label>
             <InputText 
                 id="login" 
                 @bind-Value="userModel.Login" 
@@ -17,7 +17,7 @@
                 />
         </div>
         <div class="form-group">
-            <label for="login">Hasło</label>
+            <label for="login" class="text-light">Hasło</label>
             <InputText 
                 id="password" 
                 @bind-Value="userModel.Password" 
@@ -26,9 +26,9 @@
                 />
         </div>
   
-        <button class="btn btn-primary">zaloguj</button>
+        <button class="btn btn-light">zaloguj</button>
 
-        <a href="/register" class="custom-link">nie masz konta? zarejestruj się!</a>
+        <a href="/register" class="custom-link text-light">nie masz konta? zarejestruj się!</a>
     </EditForm>
 </div>
 

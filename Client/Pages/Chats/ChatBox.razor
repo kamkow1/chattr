@@ -1,18 +1,19 @@
 ﻿<div class="chat-box">
     <ul class="list-group">
         <li class="list-group-item bg-light chat-list">
-            <button class="toggle-chat-info-btn btn btn-secondary"
-                    @onclick="() => { this.isInfoOpen = !this.isInfoOpen; }">
-                więcej
-            </button>
-            <button class="toggle-chat-info-btn btn btn-secondary"
-                    @onclick="EventCallback => loadMessages.InvokeAsync()">
-                wyświetl
-            </button>
             <span class="chat-topic text-dark">
                 nazwa:
                 @chat.Topic
             </span>
+            <br />
+            <button class="toggle-chat-info-btn btn btn-outline-dark"
+                    @onclick="() => { this.isInfoOpen = !this.isInfoOpen; }">
+                więcej
+                </button>
+            <button class="toggle-chat-info-btn btn btn-outline-dark"
+                    @onclick="EventCallback => loadMessages.InvokeAsync()">
+                wyświetl
+            </button>
         </li>
         
         <div>

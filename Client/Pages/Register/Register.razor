@@ -6,7 +6,7 @@
 <div id="register-form">
     <EditForm Model="@userModel" OnValidSubmit="@HandleSubmit">
         <div class="form-group">
-            <label for="login">login</label>
+            <label for="login" class="text-light">login</label>
             <InputText 
                 id="login" 
                 @bind-Value="userModel.Login"
@@ -16,7 +16,7 @@
             <small class="form-text text-muted">login będzie wyświetlany jako nazwa użytkownika</small>
         </div>
         <div class="form-gorup">
-            <label for="password">hasło</label>
+            <label for="password" class="text-light">hasło</label>
             <InputText 
                 id="password"
                 @bind-Value="userModel.Password"
@@ -37,7 +37,7 @@
             <small class="form-text text-muted">twój email posłuży nam do wysyłania powiadomień</small>
         </div>
 
-        <button class="btn btn-primary">zarejestruj</button>
+        <button class="btn btn-outline-primary">zarejestruj</button>
     </EditForm>
 </div>
 

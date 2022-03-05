@@ -1,9 +1,11 @@
 ﻿@page "/chats"
 
+@using chattr.Client.Pages.Chats.MessageBox
+
 @inject IJSRuntime _jsRuntime
 @inject ISessionStorageService _sessionStorage
 
-<div class="container-fluid">
+<div class="container-fluid bg-dark">
     <ChatsMenu OnMessageLoad="MessagesLoaded" />
     
     <div>

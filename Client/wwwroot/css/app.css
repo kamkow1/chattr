@@ -1,6 +1,8 @@
 ﻿@import url("open-iconic/font/css/open-iconic-bootstrap.min.css");
 html, body {
-  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; }
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; 
+  background-color: rgb(52, 58, 64);
+}
 
 a, .btn-link {
   color: #0366d6; }
@@ -112,6 +114,11 @@ a {
   margin: 0;
 }
 
+.chat-topic {
+  line-break: strict;
+  float: left;
+}
+
 .more-opts-btn {
   display: flex;
   margin-left: auto;
@@ -140,12 +147,3 @@ a {
   display: flex;
   float: right;
 }
-
-/*.msg-username {
-  display: flex;
-  float: right;
-  border: 2px solid #fff;
-  padding: 0.3em;
-  border-radius: 15px;
-  margin-left: 10px;
-}*/
