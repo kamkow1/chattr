@@ -15,6 +15,9 @@ namespace chattr.Shared.Models
         
         public DateTime SendDate { get; set; }
 
+        [NotMapped]
+        public string Username { get; set; }
+
         #region foreign keys
 
         [ForeignKey("Parent")]

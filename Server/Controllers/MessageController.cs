@@ -34,10 +34,21 @@ namespace chattr.Server.Controllers
         public IActionResult GetMessages([FromBody] Chat chat)
         {
             _logger.LogInformation($"dane z requesta: {JsonConvert.SerializeObject(chat)}");
-            var messages = _ctx.Messages.Where(m => m.ChatId == chat.Id).ToList();
+            var messages = _ctx.Messages.Where(m => m.ChatId == chat.Id)
+                .Select(m => new
+                {
+                    m.Id,
+                    m.Content,
+                    m.ChatId,
+                    m.ParentId,
+                    m.SendDate,
+                    m.UserId,
+                    Username = _ctx.Users.FirstOrDefault(u => u.Id == m.UserId).Login
+                })
+                .ToList();
 
-            /*if (!messages.Any())
-                return StatusCode(404);*/
+            if (!messages.Any())
+                return NotFound("nie znaleziono wiadomości dla tego czatu");
 
             return Ok(messages);
         }
@@ -47,19 +58,16 @@ namespace chattr.Server.Controllers
         [Authorize]
         public IActionResult SendMessage([FromBody] Message msg)
         {
-            string token = HttpContext.Session.GetString("TOKEN");
-            if (string.IsNullOrEmpty(token))
-                return StatusCode(500);
-
-            if (!_jwtHelper.IsTokenValid(_config["Jwt:Key"].ToString(), _config["Jwt:Issuer"].ToString(), token))
-                return StatusCode(401);
-
+            _logger.LogInformation($"nazwa usera {_ctx.Users.FirstOrDefault(u => u.Id == msg.UserId).Login}");
+            
             Message message = new()
             { 
                 Content = msg.Content,
                 SendDate = DateTime.Now,
                 ParentId = msg.ParentId,
-                UserId = msg.UserId
+                UserId = msg.UserId,
+                ChatId = msg.ChatId,
+                Username = _ctx.Users.FirstOrDefault(u => u.Id == msg.UserId).Login.ToString()
             };
 
             _ctx.Messages.Add(message);

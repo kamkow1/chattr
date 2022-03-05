@@ -97,11 +97,6 @@ a {
 
 .chat-box {
   display: block;
-  /*display: block;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: calc(100vh * 0.05);
-  width: 20%;*/
 }
 
 #chats {
@@ -113,15 +108,8 @@ a {
   float: right;
 }
 
-.chat-list {
+#chat-list {
   margin: 0;
-}
-
-.chat-topic {
-  
-}
-
-.chat-date {
 }
 
 .more-opts-btn {
@@ -136,15 +124,28 @@ a {
 }
 
 .toggle-chat-info-btn {
-  float: right;
+  float: left;
   font-size: 0.7em;
-  margin-left: 0.7em;
+  margin-right: 0.7em;
 }
 
 .msg {
-  display: flex;
-  flex-wrap: wrap;
-  width: 20%;
+  display: block;
+  width: fit-content;
   margin-bottom: 1%;
   padding: 1%;
 }
+
+#open-chats-btn {
+  display: flex;
+  float: right;
+}
+
+/*.msg-username {
+  display: flex;
+  float: right;
+  border: 2px solid #fff;
+  padding: 0.3em;
+  border-radius: 15px;
+  margin-left: 10px;
+}*/

@@ -1,24 +1,21 @@
 ﻿@page "/chats"
 @using chattr.Shared.Models
 @using Blazored.SessionStorage
+@using BlazorAnimate
+@using chattr.Client.Pages.Chats.MessageBox
 
 @inject IJSRuntime _jsRuntime
 @inject ISessionStorageService _sessionStorage
 
 <div class="container-fluid">
-    <ChatsMenu OnMessageLoad="MessagesLoaded" OnMessageUnload="MessagedUnloaded"/>
+    <ChatsMenu OnMessageLoad="MessagesLoaded" />
     
     <div>
         @if (_messages is not null && _currentUser is not null)
         {
             @foreach (var msg in _messages)
             {
-                <div class="@(_currentUser.Id == msg.UserId ? "rounded bg-info" : "rounded bg-secondary") 
-                    text-light msg">
-                    @msg.Content
-
-                    <small class="form-text disabled">przesłano: @msg.SendDate</small>
-                </div>
+                <MessageBox message="msg" currentUser="_currentUser" />
             }
         }
     </div>
@@ -38,11 +35,4 @@
         _currentUser = await _sessionStorage.GetItemAsync<User>("CURRENT_USER");
         StateHasChanged();
     }
-
-    private async Task MessagedUnloaded()
-    {
-        _messages = null;
-        StateHasChanged();
-    }
-
 }

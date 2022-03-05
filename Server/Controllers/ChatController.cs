@@ -53,7 +53,7 @@ namespace chattr.Server.Controllers
         [Authorize]
         public IActionResult GetChatsForUser([FromBody] User user)
         {
-            List<Chat> chats = _ctx.Chats.ToList();
+            List<Chat> chats = _ctx.Chats.Where(c => c.Members.Contains(_ctx.Users.Find(user.Id))).ToList();
             _logger.LogInformation(JsonConvert.SerializeObject(chats));
 
             return Ok(chats);

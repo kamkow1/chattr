@@ -1,0 +1,29 @@
+@using chattr.Shared.Models
+@using BlazorAnimate
+
+<Animate Animation="new SlideDownAnimation()" Duration="TimeSpan.FromMilliseconds(800)">
+    <div class="@(currentUser.Id == message.UserId ? "rounded bg-secondary" : "rounded bg-light text-dark") text-light msg"
+         @onmouseover="() => this.isExtraInfoShown = true" @onmouseout="() => this.isExtraInfoShown = false">
+        <small class="form-text disabled msg-username">@message.Username</small>
+        
+        @message.Content
+
+        @if (this.isExtraInfoShown)
+        {
+            <Animate Animation="new FadeUpAnimation()" Duration="TimeSpan.FromMilliseconds(200)">
+                <small class="form-text disabled msg-date">przesłano: @message.SendDate</small>
+            </Animate>
+        }
+    </div>
+</Animate>
+
+@code {
+
+    [Parameter]
+    public Message message { get; set; }
+
+    [Parameter]
+    public User currentUser { get; set; }
+    
+    private bool isExtraInfoShown = false;
+}
