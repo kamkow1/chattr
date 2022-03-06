@@ -147,3 +147,10 @@ a {
   display: flex;
   float: right;
 }
+
+#msg-form {
+  display: flex;
+  float: bottom;
+  margin-bottom: 5%;
+  justify-content: center;
+}

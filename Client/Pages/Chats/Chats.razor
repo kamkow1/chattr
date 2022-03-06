@@ -4,6 +4,25 @@
 
 @inject IJSRuntime _jsRuntime
 @inject ISessionStorageService _sessionStorage
+@inject NavigationManager _navigationManager
+
+<div id="msg-form">
+    <EditForm Model="messageModel" OnValidSubmit="SendMessage">
+        <div class="input-group">
+            <InputText 
+                @bind-Value="messageModel.Content" 
+                placeholder="treść wiadomości" 
+                class="form-control"
+            />
+            <div class="input-group-prepend">
+                <button class="input-group-text btn btn-success"
+                        type="submit">
+                    wyślij
+                </button>
+            </div>
+        </div>
+    </EditForm>
+</div>
 
 <div class="container-fluid bg-dark">
     <ChatsMenu OnMessageLoad="MessagesLoaded" />
@@ -21,9 +40,35 @@
 
 @code {
 
+    private Message messageModel = new();
+    
     private List<Message> _messages;
 
     private User _currentUser;
+
+    private async Task SendMessage()
+    {
+        object body = new
+        {
+            content = messageModel.Content,
+            userid = (await _sessionStorage.GetItemAsync<User>("CURRENT_USER")).Id,
+            chatid = 1
+        };
+
+        string url = $"{_navigationManager.BaseUri}api/msg/send";        
+        using HttpClient httpClient = new();
+        string token = await _sessionStorage.GetItemAsync<string>("API_TOKEN");
+        
+            
+        httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
+
+        using var response = await httpClient.PostAsJsonAsync(url, body);
+
+        if (response.IsSuccessStatusCode)
+        {
+            StateHasChanged();
+        }
+    }
 
     private async Task MessagesLoaded(List<Message> messages)
     {

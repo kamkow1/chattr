@@ -32,6 +32,9 @@
     [Parameter]
     public EventCallback<List<Message>> OnMessageLoad { get; set; }
 
+    [Parameter]
+    public int ViewedChatId { get; set; }
+
     private Chat chatModel = new();
 
     private List<Chat> chats = new();
@@ -69,13 +72,15 @@
         if (response.IsSuccessStatusCode)
         {
             chats = response.Content.ReadFromJsonAsync<Chat[]>().Result.ToList();
-
+            
             StateHasChanged();
         }
     }
 
     private async Task LoadMessages(int chatId)
     {
+        ViewedChatId = chatId;
+        
         await _jsRuntime.InvokeVoidAsync("console.log", $"chat id {chatId}");
         
         string url = $"{_navigationManager.BaseUri}api/msg/get";
