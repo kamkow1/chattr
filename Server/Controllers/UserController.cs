@@ -1,15 +1,9 @@
-﻿using System.IO;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Linq;
 using chattr.Server.Helpers;
 using chattr.Shared.Models;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace chattr.Server.Controllers
 {
@@ -18,15 +12,13 @@ namespace chattr.Server.Controllers
     {
         private readonly AppDbContext _ctx;
         private readonly ILogger<UserController> _logger;
-        private readonly JWTHelper _jwtHelper;
-        private readonly IConfiguration _config; 
+        private readonly JwtHelper _jwtHelper;
 
-        public UserController(AppDbContext ctx, ILogger<UserController> logger, JWTHelper jwtHelper, IConfiguration config)
+        public UserController(AppDbContext ctx, ILogger<UserController> logger, JwtHelper jwtHelper)
         {
             _ctx = ctx;
             _logger = logger;
             _jwtHelper = jwtHelper;
-            _config = config;
         }
 
         [AllowAnonymous]
@@ -34,20 +26,13 @@ namespace chattr.Server.Controllers
         [Route("/api/users/register")]
         public IActionResult Register([FromBody] User user)
         {
-            _logger.LogInformation($"metoda {System.Reflection.MethodBase.GetCurrentMethod().Name}, otrzymane dane: login - {user.Login}, hasło - {user.Password}, email - {user.Email}");
+            _logger.LogInformation($"metoda {System.Reflection.MethodBase.GetCurrentMethod()?.Name}, otrzymane dane: login - {user.Login}, hasło - {user.Password}, email - {user.Email}");
 
             if (!(_ctx.Users.Where(u => u.Login == user.Login).FirstOrDefault() is null))
                 return StatusCode(409);
 
             if (user.Login is null || user.Password is null || user.Email is null)
                 return StatusCode(400);
-
-            User userToAdd = new()
-            {
-                Login = user.Login,
-                Password = user.Password,
-                Email = user.Email
-            };
 
             _ctx.Users.Add(user);
             _ctx.SaveChanges();
@@ -65,7 +50,7 @@ namespace chattr.Server.Controllers
 
             if (foundUser is not null)
             {
-                var tokenString = _jwtHelper.GenerateJsonWebToken(foundUser);
+                var tokenString = _jwtHelper.GenerateJsonWebToken();
                 response = Ok(new { token = tokenString });
             }
 

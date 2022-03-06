@@ -1,14 +1,9 @@
-﻿using chattr.Server.Helpers;
-using chattr.Shared.Models;
-using Microsoft.AspNetCore.Http;
+﻿using chattr.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Newtonsoft.Json;
 
@@ -19,15 +14,11 @@ namespace chattr.Server.Controllers
     {
         private readonly AppDbContext _ctx;
         private readonly ILogger<ChatController> _logger;
-        private readonly JWTHelper _jwtHelper;
-        private readonly IConfiguration _config;
 
-        public ChatController(AppDbContext ctx, ILogger<ChatController> logger, JWTHelper jwtHelper, IConfiguration config)
+        public ChatController(AppDbContext ctx, ILogger<ChatController> logger)
         {
             _ctx = ctx;
             _logger = logger;
-            _jwtHelper = jwtHelper;
-            _config = config;
         }
 
         [HttpPost]

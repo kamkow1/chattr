@@ -26,7 +26,7 @@ namespace chattr.Server
         
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<JWTHelper>();
+            services.AddSingleton<JwtHelper>();
 
             services.AddSession();
 
