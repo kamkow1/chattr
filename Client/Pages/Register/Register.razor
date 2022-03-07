@@ -3,52 +3,60 @@
 @inject IJSRuntime _jsRuntime
 @inject NavigationManager _navigationManager
 
+@if (this.isSpinnerShown)
+{
+    <Spinner />
+}
+
 <div id="register-form">
     <EditForm Model="@userModel" OnValidSubmit="@HandleSubmit">
         <div class="form-group">
             <label for="login" class="text-light">login</label>
-            <InputText 
-                id="login" 
-                @bind-Value="userModel.Login"
-                class="form-control"
-                placeholder="wpisz login"
-                />
+            <InputText id="login"
+                       @bind-Value="userModel.Login"
+                       class="form-control"
+                       placeholder="wpisz login" 
+                       disabled="@(this.isSpinnerShown)" />
             <small class="form-text text-muted">login będzie wyświetlany jako nazwa użytkownika</small>
         </div>
         <div class="form-gorup">
             <label for="password" class="text-light">hasło</label>
-            <InputText 
-                id="password"
-                @bind-Value="userModel.Password"
-                class="form-control"
-                placeholder="wpisz hasło"
-                type="password"
-                />
+            <InputText id="password"
+                       @bind-Value="userModel.Password"
+                       class="form-control"
+                       placeholder="wpisz hasło"
+                       type="password" 
+                       disabled="@(this.isSpinnerShown)" />
         </div>
         <div class="form-group">
             <label for="email">email</label>
-            <InputText 
-                id="email"
-                @bind-Value="userModel.Email"
-                class="form-control"
-                placeholder="wpisz email"
-                type="email"
-                />
+            <InputText id="email"
+                       @bind-Value="userModel.Email"
+                       class="form-control"
+                       placeholder="wpisz email"
+                       type="email" 
+                       disabled="@(this.isSpinnerShown)" />
             <small class="form-text text-muted">twój email posłuży nam do wysyłania powiadomień</small>
         </div>
 
-        <button class="btn btn-outline-primary">zarejestruj</button>
+        <button 
+                class="btn btn-outline-primary"
+                disabled="@(this.isSpinnerShown)">
+            zarejestruj
+        </button>
     </EditForm>
 </div>
 
 @code {
     private User userModel = new();
 
+    private bool isSpinnerShown = false;
+
     private async Task HandleSubmit()
     {
         string url = $"{_navigationManager.BaseUri}api/users/register";
 
-        object body = new 
+        object body = new
         {
             login = userModel.Login,
             password = userModel.Password,
@@ -56,9 +64,12 @@
         };
 
         HttpClient client = new();
+
+        this.isSpinnerShown = true;
+
         using var response = await client.PostAsJsonAsync<object>(url, body);
-;
-        if (response.IsSuccessStatusCode) 
+        ;
+        if (response.IsSuccessStatusCode)
         {
             _navigationManager.NavigateTo("/login");
         }

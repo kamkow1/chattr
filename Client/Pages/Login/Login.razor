@@ -5,6 +5,11 @@
 @inject ISessionStorageService _sessionStorage
 
 
+@if (this.isSpinnerShown)
+{
+    <Spinner />
+}
+
 <div id="login-form">
     <EditForm Model="@userModel" OnValidSubmit="@HandleSubmit">
         <div class="form-group">
@@ -14,6 +19,7 @@
                 @bind-Value="userModel.Login" 
                 class="form-control"
                 placeholder="wpisz login"
+                disabled="@(this.isSpinnerShown)"
                 />
         </div>
         <div class="form-group">
@@ -23,10 +29,15 @@
                 @bind-Value="userModel.Password" 
                 class="form-control"
                 placeholder="wpisz hasło"
+                disabled="@(this.isSpinnerShown)"
                 />
         </div>
   
-        <button class="btn btn-light">zaloguj</button>
+        <button 
+                class="btn btn-light"
+                disabled="@(this.isSpinnerShown)">
+            zaloguj
+        </button>
 
         <a href="/register" class="custom-link text-light">nie masz konta? zarejestruj się!</a>
     </EditForm>
@@ -35,20 +46,25 @@
 @code {
     private User userModel = new();
 
+    private bool isSpinnerShown = false;
+
     private async Task HandleSubmit()
     {
         string url = $"{_navigationManager.BaseUri}api/users/auth";
 
-        object body = new 
+        object body = new
         {
             login = userModel.Login,
             password = userModel.Password
         };
 
         using HttpClient client = new();
+
+        this.isSpinnerShown = true;
+
         using var response = await client.PostAsJsonAsync<object>(url, body);
 
-        if (response.IsSuccessStatusCode) 
+        if (response.IsSuccessStatusCode)
         {
             await _sessionStorage.SetItemAsStringAsync("API_TOKEN", response.Content.ReadAsStringAsync().Result
                 .Replace('"', ' ')
@@ -63,16 +79,17 @@
             string token = await _sessionStorage.GetItemAsync<string>("API_TOKEN");
 
             await _jsRuntime.InvokeVoidAsync("console.log", token);
-            
+
             httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
             await _jsRuntime.InvokeVoidAsync("console.log", httpClient);
-            
+
             using var responseFromGetCurrentUser = await httpClient.PostAsJsonAsync<object>(urlToCurrentUser, body);
+
             await _jsRuntime.InvokeVoidAsync("console.log", responseFromGetCurrentUser.Content.ReadAsStringAsync().Result);
 
             await _sessionStorage.SetItemAsync<User>("CURRENT_USER", JsonConvert.DeserializeObject<User>(responseFromGetCurrentUser.Content.ReadAsStringAsync().Result));
-            
+
             _navigationManager.NavigateTo("/");
         }
     }

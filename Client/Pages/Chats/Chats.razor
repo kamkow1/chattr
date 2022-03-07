@@ -9,14 +9,14 @@
 <div id="msg-form">
     <EditForm Model="messageModel" OnValidSubmit="SendMessage">
         <div class="input-group">
-            <InputText 
-                @bind-Value="messageModel.Content" 
-                placeholder="treść wiadomości" 
-                class="form-control"
-            />
+            <InputText @bind-Value="messageModel.Content"
+                       placeholder="treść wiadomości"
+                       class="form-control" 
+                       disabled="@(this.isSpinnerShown)" />
             <div class="input-group-prepend">
                 <button class="input-group-text btn btn-success"
-                        type="submit">
+                        type="submit"
+                        disabled="@(this.isSpinnerShown)">
                     wyślij
                 </button>
             </div>
@@ -26,7 +26,7 @@
 
 <div class="container-fluid bg-dark">
     <ChatsMenu OnMessageLoad="MessagesLoaded" />
-    
+
     <div>
         @if (_messages is not null && _currentUser is not null)
         {
@@ -40,8 +40,10 @@
 
 @code {
 
+    private bool isSpinnerShown = false;
+
     private Message messageModel = new();
-    
+
     private List<Message> _messages;
 
     private User _currentUser;
@@ -55,11 +57,14 @@
             chatid = 1
         };
 
-        string url = $"{_navigationManager.BaseUri}api/msg/send";        
+        string url = $"{_navigationManager.BaseUri}api/msg/send";
         using HttpClient httpClient = new();
+
+        this.isSpinnerShown = true;
+
         string token = await _sessionStorage.GetItemAsync<string>("API_TOKEN");
-        
-            
+
+
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
         using var response = await httpClient.PostAsJsonAsync(url, body);
