@@ -67,7 +67,7 @@
         
         httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + token);
 
-        var response = await httpClient.PostAsJsonAsync(url, body);
+        var response = await httpClient.GetAsync(url);
 
         if (response.IsSuccessStatusCode)
         {

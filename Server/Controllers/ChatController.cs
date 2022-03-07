@@ -39,12 +39,13 @@ namespace chattr.Server.Controllers
             return StatusCode(200);
         }
 
-        [HttpPost]
+        [HttpGet]
         [Route("/api/chats/get")]
         [Authorize]
-        public IActionResult GetChatsForUser([FromBody] User user)
+        public IActionResult GetChatsForUser()
         {
-            List<Chat> chats = _ctx.Chats.Where(c => c.Members.Contains(_ctx.Users.Find(user.Id))).ToList();
+            //List<Chat> chats = _ctx.Chats.Where(c => c.Members.Contains(_ctx.Users.Find(user.Id))).ToList();
+            List<Chat> chats = _ctx.Chats.ToList();
             _logger.LogInformation(JsonConvert.SerializeObject(chats));
 
             return Ok(chats);
