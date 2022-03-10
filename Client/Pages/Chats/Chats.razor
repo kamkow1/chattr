@@ -19,18 +19,6 @@
                                 type="submit">
                             wyślij
                         </button>
-                        
-                        <select class="input-group-text custom-select"
-                                @onchange="(ChangeEventArgs e) => { this.selectedChatId = int.Parse(e.Value.ToString()); }">
-                                @if (this._chats.Count() != 0)
-                                {
-                                    @foreach (Chat chat in _chats)
-                                    { 
-                                        <option value="@chat.Id">@chat.Topic</option>
-                                    }
-                                                         
-                                }
-                            </select>
                     </div>
                 </div>
             </EditForm>
@@ -47,6 +35,11 @@
                         <MessageBox message="msg" currentUser="_currentUser"  />
                     }
                 }
+                
+                @if (!_messages.Any()) 
+                { 
+                    <p class="text-warning">brak wiadomości w tym czacie...</p>
+                }
             </div>
         </div>
     </div>
@@ -59,6 +52,8 @@
 
 @code {
 
+    private bool wasChatLoadingSuccessful;
+
     private int selectedChatId;
 
     private List<Chat> _chats = new();
@@ -67,7 +62,7 @@
 
     private Message messageModel = new();
 
-    private List<Message> _messages;
+    private List<Message> _messages = new();
 
     private User _currentUser;
 
@@ -91,23 +86,25 @@
 
         using var response = await httpClient.GetAsync(url);
 
+        if (((int)response.StatusCode) == 404)
+        {
+            this.wasChatLoadingSuccessful = false;
+
+            StateHasChanged();
+        }
+
         if (response.IsSuccessStatusCode)
         {
             this._chats = response.Content.ReadFromJsonAsync<Chat[]>().Result.ToList();
 
-            //await _jsRuntime.InvokeVoidAsync("console.log", $"dane do selecta: {JsonConvert.SerializeObject(response.Content.ReadFromJsonAsync<Chat[]>().Result.ToList())}");
-
             this.isSpinnerShown = false;
-            
+
             StateHasChanged();
         }
     }
 
     private async Task SendMessage()
     {
-        // await _jsRuntime.InvokeVoidAsync("console.log", JsonConvert.SerializeObject(context));
-        await _jsRuntime.InvokeVoidAsync("console.log", this.selectedChatId);
-
         object body = new
         {
             content = messageModel.Content,
@@ -129,6 +126,8 @@
 
         if (response.IsSuccessStatusCode)
         {
+            this.isSpinnerShown = false;
+
             StateHasChanged();
         }
     }
@@ -136,9 +135,14 @@
     private async Task MessagesLoaded(List<Message> messages)
     {
         _messages = messages;
-        await _jsRuntime.InvokeVoidAsync("console.log", messages);
 
         _currentUser = await _sessionStorage.GetItemAsync<User>("CURRENT_USER");
+
+        if (messages.Any())
+        {
+            selectedChatId = messages.Select(m => m.ChatId).First();
+        }
+
         StateHasChanged();
     }
 }

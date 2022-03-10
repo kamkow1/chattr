@@ -39,9 +39,6 @@ namespace chattr.Server.Controllers
                 })
                 .ToList();
 
-            if (!messages.Any())
-                return NotFound("nie znaleziono wiadomości dla tego czatu");
-
             return Ok(messages);
         }
 
