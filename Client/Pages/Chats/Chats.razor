@@ -19,18 +19,18 @@
                                 type="submit">
                             wyślij
                         </button>
-                    </div>
-                    <div class="input-group-prepend">
-                         <select class="input-group-text custom-select"
-                                 @onchange="(ChangeEventArgs e) => { this.selectedChatId = int.Parse(e.Value.ToString()); }">
-                             @if (this._chats.Count() != 0)
-                             {
-                                @foreach (Chat chat in _chats)
-                                { 
-                                    <option value="@chat.Id">@chat.Topic</option>
+                        
+                        <select class="input-group-text custom-select"
+                                @onchange="(ChangeEventArgs e) => { this.selectedChatId = int.Parse(e.Value.ToString()); }">
+                                @if (this._chats.Count() != 0)
+                                {
+                                    @foreach (Chat chat in _chats)
+                                    { 
+                                        <option value="@chat.Id">@chat.Topic</option>
+                                    }
+                                                         
                                 }
-                             }
-                         </select>
+                            </select>
                     </div>
                 </div>
             </EditForm>
@@ -44,7 +44,7 @@
                 {
                     @foreach (var msg in _messages)
                     {
-                        <MessageBox message="msg" currentUser="_currentUser" />
+                        <MessageBox message="msg" currentUser="_currentUser"  />
                     }
                 }
             </div>
@@ -97,6 +97,8 @@
 
             //await _jsRuntime.InvokeVoidAsync("console.log", $"dane do selecta: {JsonConvert.SerializeObject(response.Content.ReadFromJsonAsync<Chat[]>().Result.ToList())}");
 
+            this.isSpinnerShown = false;
+            
             StateHasChanged();
         }
     }
