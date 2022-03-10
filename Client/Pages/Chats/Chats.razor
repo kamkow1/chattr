@@ -1,7 +1,5 @@
 ﻿@page "/chats"
 
-@using chattr.Client.Pages.Chats.MessageBox
-
 @inject IJSRuntime _jsRuntime
 @inject ISessionStorageService _sessionStorage
 @inject NavigationManager _navigationManager
@@ -19,6 +17,18 @@
                                 type="submit">
                             wyślij
                         </button>
+                    </div>
+
+                    <div class="input-group-prepend">
+                        <select class="input-group-text custom-select" @onchange="(e) => ToggleTargetChat(e)">
+                            @if (_chats is not null)
+                            {
+                                @foreach (var chat in _chats)
+                                { 
+                                    <option value="@chat.Id">@chat.Topic</option>
+                                }
+                            }
+                        </select>
                     </div>
                 </div>
             </EditForm>
@@ -71,6 +81,13 @@
         await LoadChats();
     }
 
+    private async Task ToggleTargetChat(ChangeEventArgs e)
+    {
+        this.selectedChatId = int.Parse(e.Value.ToString());
+
+        await _jsRuntime.InvokeVoidAsync("console.log", this.selectedChatId);
+    }
+
     private async Task LoadChats()
     {
         string url = $"{_navigationManager.BaseUri}api/chats/get";
@@ -112,6 +129,8 @@
             chatid = this.selectedChatId
         };
 
+        await _jsRuntime.InvokeVoidAsync("console.log", body);
+
         string url = $"{_navigationManager.BaseUri}api/msg/send";
         using HttpClient httpClient = new();
 
@@ -140,7 +159,7 @@
 
         if (messages.Any())
         {
-            selectedChatId = messages.Select(m => m.ChatId).First();
+            selectedChatId = messages.First().ChatId;
         }
 
         StateHasChanged();
